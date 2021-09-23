@@ -1,0 +1,88 @@
+{
+  "plan_position": {
+    "id_sbkr": "d5ddbc50-e385-4a85-af75-30f5c65378fd",
+    "number": "000000555",
+    "date": "2020-01-12T18:30:45",
+    "year_purchase": 2021,
+    "item_number": "551",
+    "purchase_no_place": false,
+    "position_status": "41400",
+    "executing_division": {
+    "code_zup": "РК00-0261",
+    "name_zup": "Развитие розничного бизнеса"
+    },
+    "subject_contract": "Оказание услуг по привлечению клиентов и услуг по выдаче ипотечных кредитов для нужд АО Банк ДОМ.РФ",
+    "requirements": "партнер аккредитован в соответствии с требованиями Положения об аккредитации партнеров АО Банк ДОМ.РФ",
+    "contract_amount": 19800000.00,
+    "currency": "643",
+    "contract_amount_rub": 19800000.00,
+    "currency_exchange_rate": 88.7545,
+    "multiplicity": 1,
+    "course_date": "2021-01-01T00:00:00",
+    "date_notification": "2021-01-12T00:00:00",
+    "term_execution_contract": "2021-01-12T00:00:00",
+    "id_purchase_method": "d5ddbc50-e385-4a85-af75-30f5c65378fd",
+    "electronic_form": true,
+    "smp": false,
+    "hightech_procurement": false,
+    "no_monitoring_smp": false,
+    "no_monitoring_budget": false,
+    "unaccounted_purchase_1352": false,
+    "id_unaccounted_purchase": null,
+    "small_volume": null,
+    "application_number_sed": "89899898",
+    "document_number_sed": "039989898",
+    "budget_applications": [
+      {
+        "date_budget_application": "2021-08-12T00:00:00",
+        "number_budget_application": "00-00004014"
+      },
+      {
+        "date_budget_application": "2021-08-13T00:00:00",
+        "number_budget_application": "00-00004015"
+      }
+    ],
+    "initiating_units": [
+      {
+        "code_zup": "РК00-0261",
+        "name_zup": "Развитие розничного бизнеса"
+      },
+      {
+        "code_zup": "РК00-0001",
+        "name_zup": "Информационные технологии"
+      }
+    ],
+    "classifier_codes": [
+      {
+        "okved_2": "64.19",
+        "okpd_2": "64.19.23.000",
+        "unit_measurement": "876",
+        "quantity": 1,
+        "okato": "45000000000",
+        "region": "45000000000"
+      },
+      {
+        "okved_2": "26.30.22",
+        "okpd_2": "26.30.22.000",
+        "unit_measurement": "876",
+        "quantity": 1,
+        "okato": "45000000000",
+        "region": "45000000000"
+      }
+    ],
+    "files": [
+      {
+        "name": "документ1.pdf",
+        "id": "581f8ace-1f39-11eb-a18b-005056824fd9",
+        "upload_date": "2021-01-01T00:00:00Z",
+        "eds": false
+      },
+      {
+        "name": "документ2.pdf",
+        "id": "581f8ace-1f39-11eb-a18b-005056824fd7",
+        "upload_date": "2021-01-01T00:00:00Z",
+        "eds": false
+      }
+    ]
+  }
+}
