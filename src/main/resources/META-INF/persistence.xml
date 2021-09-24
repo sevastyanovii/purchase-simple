@@ -5,6 +5,8 @@
 
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <class>ru.tower.json1c.map.SimpleEntity</class>
+        <class>ru.tower.purchase.entity.Purchase223</class>
+        <class>ru.tower.purchase.entity.nsi.NsiStatus</class>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL10Dialect"/>
             <property name="hibernate.connection.url"

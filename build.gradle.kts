@@ -10,6 +10,7 @@ repositories {
 }
 
 dependencies {
+    implementation("javax.validation:validation-api:2.0.1.Final")
     implementation("org.postgresql:postgresql:42.2.23")
     implementation("org.hibernate:hibernate-entitymanager:5.4.30.Final")
     implementation("com.google.code.gson:gson:2.8.8")
