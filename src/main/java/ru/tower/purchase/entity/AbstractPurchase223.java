@@ -174,4 +174,12 @@ public abstract class AbstractPurchase223<E extends AbstractEntity> extends Comm
     public Long getId() {
         return id;
     }
+
+    public NMCKInstructions getNmckInstruction() {
+        return nmckInstruction;
+    }
+
+    public void setNmckInstruction(NMCKInstructions nmckInstruction) {
+        this.nmckInstruction = nmckInstruction;
+    }
 }

@@ -19,4 +19,13 @@ public class Purchase223 extends AbstractPurchase223<Purchase223> {
         return TABLE_NAME;
     }
 
+    @Override
+    protected Organization getCommonOrg() {
+        return null;
+    }
+
+    @Override
+    protected String getCommonLetter(boolean extCondition) {
+        return null;
+    }
 }

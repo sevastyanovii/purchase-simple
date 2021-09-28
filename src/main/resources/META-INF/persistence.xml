@@ -7,15 +7,20 @@
         <class>ru.tower.json1c.map.SimpleEntity</class>
         <class>ru.tower.purchase.entity.Purchase223</class>
         <class>ru.tower.purchase.entity.nsi.NsiStatus</class>
+        <class>ru.tower.purchase.entity.Organization</class>
+        <class>ru.tower.purchase.entity.PurchasePlan223</class>
+        <class>ru.tower.purchase.entity.PurchasePlan223Item</class>
+        <class>ru.tower.purchase.entity.PurchasePlan223ItemLink</class>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL10Dialect"/>
             <property name="hibernate.connection.url"
-                      value="jdbc:postgresql://localhost:5432/pg2?charSet=UTF-8"/>
+                      value="jdbc:postgresql://localhost:5432/pg3?charSet=UTF-8"/>
             <property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>
             <property name="hibernate.connection.username" value="postgres"/>
             <property name="hibernate.connection.password" value="postgres"/>
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>
+            <property name="hibernate.hbm2ddl.auto" value="none"/>
 
         </properties>
 
