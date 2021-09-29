@@ -10,7 +10,9 @@ import ru.tower.json1c.db.*;
 import ru.tower.json1c.map.SimpleEntity;
 import ru.tower.json1c.parse.PlanPositionFile;
 import ru.tower.json1c.parse.Request;
-import ru.tower.purchase.entity.*;
+import ru.tower.purchase.entity.Organization;
+import ru.tower.purchase.entity.Purchase223;
+import ru.tower.purchase.entity.PurchasePlan223;
 import ru.tower.purchase.entity.nsi.NsiStatus;
 
 import javax.persistence.EntityManager;
@@ -19,7 +21,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -101,22 +102,23 @@ public class Json1CParserMain {
         purchase223.setOrganization(organization);
         purchase223.setNmckInstruction(INFORMATION);
         purchase223.setPurchasesDescription(purchasesDescriptionFacade.findByName(request.getPlan_position().getSubject_contract()));
+        purchase223.setMinRequirements(request.getPlan_position().getRequirements());
         Assertions.assertNotNull(purchase223.getPurchasesDescription());
 
-        PurchasePlan223 plan223 = purchasePlan223Facade.findPlan(organization, request.getPlan_position().getYear_purchase());
-        PurchasePlan223Item item = new PurchasePlan223Item();
-        item.setGuid(UUID.randomUUID().toString());
-        item.setPlan(plan223);
-        item.setOrdinalNumber(request.getPlan_position().getItem_number());
-        plan223ItemFacade.persist(item);
+//        PurchasePlan223 plan223 = purchasePlan223Facade.findPlan(organization, request.getPlan_position().getYear_purchase());
+//        PurchasePlan223Item item = new PurchasePlan223Item();
+//        item.setGuid(UUID.randomUUID().toString());
+//        item.setPlan(plan223);
+//        item.setOrdinalNumber(request.getPlan_position().getItem_number());
+//        plan223ItemFacade.persist(item);
 
         purchase223Facade.persist(purchase223);
 
-        PurchasePlan223ItemLink link = new PurchasePlan223ItemLink();
-        link.setMain(true);
-        link.setPurchase(purchase223);
-        link.setItem(item);
-        purchasePlan223ItemFacade.persist(link);
+//        PurchasePlan223ItemLink link = new PurchasePlan223ItemLink();
+//        link.setMain(true);
+//        link.setPurchase(purchase223);
+//        link.setItem(item);
+//        purchasePlan223ItemFacade.persist(link);
 
         commitTransaction();
         return purchase223;

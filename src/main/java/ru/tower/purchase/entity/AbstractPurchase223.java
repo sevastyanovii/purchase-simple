@@ -191,4 +191,12 @@ public abstract class AbstractPurchase223<E extends AbstractEntity> extends Comm
     public void setPurchasesDescription(NsiPurchasesDescription purchasesDescription) {
         this.purchasesDescription = purchasesDescription;
     }
+
+    public String getMinRequirements() {
+        return minRequirements;
+    }
+
+    public void setMinRequirements(String minRequirements) {
+        this.minRequirements = minRequirements;
+    }
 }
