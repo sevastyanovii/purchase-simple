@@ -7,6 +7,7 @@ import javax.persistence.*;
 /**
  * Наименование закупки
  */
+@NamedQueries({@NamedQuery(name = "NsiPurchasesDescription.findByName", query = "from NsiPurchasesDescription p where upper(p.name) like upper(:like)")})
 @Table(name = "nsi_purchases_description")
 @Entity
 public class NsiPurchasesDescription extends AbstractEntity {

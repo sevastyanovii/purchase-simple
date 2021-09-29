@@ -11,6 +11,7 @@ import java.util.List;
 /**
  * План (план-график) закупок
  */
+@NamedQuery(name = "PurchasePlan223.findPlan", query = "from PurchasePlan223 p where p.organization = :org and p.type = :type and year = :year")
 @Entity
 @Table(name = PurchasePlan223.TABLE_NAME)
 public class PurchasePlan223 extends CommonEntity<PurchasePlan223> {

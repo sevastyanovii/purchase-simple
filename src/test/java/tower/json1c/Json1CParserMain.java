@@ -37,6 +37,7 @@ public class Json1CParserMain {
     private final PurchasePlan223ItemFacade plan223ItemFacade = new PurchasePlan223ItemFacade();
     private final PurchasePlan223ItemLinkFacade purchasePlan223ItemFacade = new PurchasePlan223ItemLinkFacade();
     private final NsiPurchasesDescriptionFacade purchasesDescriptionFacade = new NsiPurchasesDescriptionFacade();
+    private final NsiAstPurchaseTypeFacade nsiAstPurchaseTypeFacade = new NsiAstPurchaseTypeFacade();
 
     @Test public void test() {
         EntityManager em = PersistenceSupport.getEntityManager();
@@ -91,34 +92,24 @@ public class Json1CParserMain {
         Assertions.assertNotNull(organization);
         Purchase223 purchase223 = createPurchase(organization);
         Assertions.assertTrue(purchase223.getId() > 0);
+        Assertions.assertNotNull(purchase223.getPurchasesDescription());
+        Assertions.assertNotNull(purchase223.getPurchaseMethod());
     }
 
     private Purchase223 createPurchase(Organization organization) throws Throwable {
         Request request = parseJson(getExampleBody());
 
         startTransaction();
+
         Purchase223 purchase223 = new Purchase223();
         purchase223.setNsiStatus(nsiStatusFacade.find(NsiStatus.class, Long.parseLong(request.getPlan_position().getPosition_status())));
         purchase223.setOrganization(organization);
         purchase223.setNmckInstruction(INFORMATION);
         purchase223.setPurchasesDescription(purchasesDescriptionFacade.findByName(request.getPlan_position().getSubject_contract()));
         purchase223.setMinRequirements(request.getPlan_position().getRequirements());
-        Assertions.assertNotNull(purchase223.getPurchasesDescription());
-
-//        PurchasePlan223 plan223 = purchasePlan223Facade.findPlan(organization, request.getPlan_position().getYear_purchase());
-//        PurchasePlan223Item item = new PurchasePlan223Item();
-//        item.setGuid(UUID.randomUUID().toString());
-//        item.setPlan(plan223);
-//        item.setOrdinalNumber(request.getPlan_position().getItem_number());
-//        plan223ItemFacade.persist(item);
+        purchase223.setPurchaseMethod(nsiAstPurchaseTypeFacade.findPurchaseType(request.getPlan_position().getId_purchase_method()));
 
         purchase223Facade.persist(purchase223);
-
-//        PurchasePlan223ItemLink link = new PurchasePlan223ItemLink();
-//        link.setMain(true);
-//        link.setPurchase(purchase223);
-//        link.setItem(item);
-//        purchasePlan223ItemFacade.persist(link);
 
         commitTransaction();
         return purchase223;

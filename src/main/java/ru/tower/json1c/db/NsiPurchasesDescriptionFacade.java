@@ -6,7 +6,7 @@ import ru.tower.purchase.entity.nsi.NsiPurchasesDescription;
 public class NsiPurchasesDescriptionFacade extends AbstractFacade <NsiPurchasesDescription, Long> {
 
     public NsiPurchasesDescription findByName(String name) {
-        return (NsiPurchasesDescription) em.createQuery("from NsiPurchasesDescription p where upper(p.name) like upper(:like)")
+        return (NsiPurchasesDescription) em.createNamedQuery("NsiPurchasesDescription.findByName")
                 .setParameter("like", name).setMaxResults(1).getResultList().stream().findFirst().orElseGet(() -> {
                     return createNew(name);
                 });

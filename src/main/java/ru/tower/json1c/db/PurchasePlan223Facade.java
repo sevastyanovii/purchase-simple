@@ -9,7 +9,7 @@ import static java.lang.String.format;
 public class PurchasePlan223Facade extends AbstractFacade <PurchasePlan223, Long> {
 
     public PurchasePlan223 findPlan(Organization organization, Integer yearPurchase) throws Throwable {
-        return (PurchasePlan223) em.createQuery("from PurchasePlan223 p where p.organization = :org and p.type = :type and year = :year")
+        return (PurchasePlan223) em.createNamedQuery("PurchasePlan223.findPlan")
                 .setParameter("org", organization)
                 .setParameter("type", PurchasePlan223.Type.PLAN)
                 .setParameter("year", yearPurchase)

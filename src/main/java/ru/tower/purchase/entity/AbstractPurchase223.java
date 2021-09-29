@@ -1,5 +1,6 @@
 package ru.tower.purchase.entity;
 
+import ru.tower.purchase.entity.nsi.NsiAstPurchaseType;
 import ru.tower.purchase.entity.nsi.NsiPurchasesDescription;
 import ru.tower.purchase.entity.nsi.NsiStatus;
 
@@ -76,9 +77,9 @@ public abstract class AbstractPurchase223<E extends AbstractEntity> extends Comm
     /**
      * Cпособ закупки
      */
-//    @JoinColumn(name = "purchase_method", referencedColumnName = "id")
-//    @ManyToOne
-//    private NsiAstPurchaseType purchaseMethod;
+    @JoinColumn(name = "purchase_method", referencedColumnName = "id")
+    @ManyToOne
+    private NsiAstPurchaseType purchaseMethod;
 
     /**
      * Признак закупки малого объема
@@ -198,5 +199,13 @@ public abstract class AbstractPurchase223<E extends AbstractEntity> extends Comm
 
     public void setMinRequirements(String minRequirements) {
         this.minRequirements = minRequirements;
+    }
+
+    public NsiAstPurchaseType getPurchaseMethod() {
+        return purchaseMethod;
+    }
+
+    public void setPurchaseMethod(NsiAstPurchaseType purchaseMethod) {
+        this.purchaseMethod = purchaseMethod;
     }
 }
