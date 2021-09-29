@@ -4,6 +4,7 @@ import ru.tower.purchase.entity.AbstractEntity;
 
 import javax.persistence.EntityManager;
 import java.io.Serializable;
+import java.util.UUID;
 
 import static ru.tower.json1c.PersistenceSupport.getEntityManager;
 
@@ -19,4 +20,9 @@ public class AbstractFacade <T extends AbstractEntity,K extends Serializable>{
         em.persist(object);
         return object;
     }
+
+    public String randomUUID() {
+        return UUID.randomUUID().toString();
+    }
+
 }

@@ -35,6 +35,7 @@ public class Json1CParserMain {
     private final OrganizationFacade organizationFacade = new OrganizationFacade();
     private final PurchasePlan223ItemFacade plan223ItemFacade = new PurchasePlan223ItemFacade();
     private final PurchasePlan223ItemLinkFacade purchasePlan223ItemFacade = new PurchasePlan223ItemLinkFacade();
+    private final NsiPurchasesDescriptionFacade purchasesDescriptionFacade = new NsiPurchasesDescriptionFacade();
 
     @Test public void test() {
         EntityManager em = PersistenceSupport.getEntityManager();
@@ -84,25 +85,29 @@ public class Json1CParserMain {
         PurchasePlan223 plan223 = purchasePlan223Facade.find(PurchasePlan223.class, 1L);
     }
 
-    @Test public void test4() {
+    @Test public void test4() throws Throwable {
         Organization organization = organizationFacade.find(Organization.class, 23L);
         Assertions.assertNotNull(organization);
         Purchase223 purchase223 = createPurchase(organization);
         Assertions.assertTrue(purchase223.getId() > 0);
     }
 
-    private Purchase223 createPurchase(Organization organization) {
+    private Purchase223 createPurchase(Organization organization) throws Throwable {
         Request request = parseJson(getExampleBody());
+
         startTransaction();
         Purchase223 purchase223 = new Purchase223();
         purchase223.setNsiStatus(nsiStatusFacade.find(NsiStatus.class, Long.parseLong(request.getPlan_position().getPosition_status())));
         purchase223.setOrganization(organization);
         purchase223.setNmckInstruction(INFORMATION);
+        purchase223.setPurchasesDescription(purchasesDescriptionFacade.findByName(request.getPlan_position().getSubject_contract()));
+        Assertions.assertNotNull(purchase223.getPurchasesDescription());
 
-        PurchasePlan223 plan223 = purchasePlan223Facade.findPlan(organization);
+        PurchasePlan223 plan223 = purchasePlan223Facade.findPlan(organization, request.getPlan_position().getYear_purchase());
         PurchasePlan223Item item = new PurchasePlan223Item();
         item.setGuid(UUID.randomUUID().toString());
         item.setPlan(plan223);
+        item.setOrdinalNumber(request.getPlan_position().getItem_number());
         plan223ItemFacade.persist(item);
 
         purchase223Facade.persist(purchase223);

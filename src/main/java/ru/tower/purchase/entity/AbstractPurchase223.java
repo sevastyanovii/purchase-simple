@@ -1,5 +1,6 @@
 package ru.tower.purchase.entity;
 
+import ru.tower.purchase.entity.nsi.NsiPurchasesDescription;
 import ru.tower.purchase.entity.nsi.NsiStatus;
 
 import javax.persistence.*;
@@ -54,9 +55,9 @@ public abstract class AbstractPurchase223<E extends AbstractEntity> extends Comm
     /**
      * Наименование предмета договора
      */
-//    @JoinColumn(name = "purchases_description_id", referencedColumnName = "id")
-//    @ManyToOne
-//    private NsiPurchasesDescription purchasesDescription;
+    @ManyToOne
+    @JoinColumn(name = "purchases_description_id", referencedColumnName = "id")
+    private NsiPurchasesDescription purchasesDescription;
 
     /**
      * Полное наименование предмета договора
@@ -181,5 +182,13 @@ public abstract class AbstractPurchase223<E extends AbstractEntity> extends Comm
 
     public void setNmckInstruction(NMCKInstructions nmckInstruction) {
         this.nmckInstruction = nmckInstruction;
+    }
+
+    public NsiPurchasesDescription getPurchasesDescription() {
+        return purchasesDescription;
+    }
+
+    public void setPurchasesDescription(NsiPurchasesDescription purchasesDescription) {
+        this.purchasesDescription = purchasesDescription;
     }
 }

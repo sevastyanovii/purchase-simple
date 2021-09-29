@@ -14,7 +14,7 @@ public class PlanPosition {
     private Date date;
 
     private Integer year_purchase;
-    private String item_number;
+    private Integer item_number;
     private Boolean purchase_no_place;
     private String position_status;
     private Division executing_division;
@@ -79,14 +79,6 @@ public class PlanPosition {
 
     public void setYear_purchase(Integer year_purchase) {
         this.year_purchase = year_purchase;
-    }
-
-    public String getItem_number() {
-        return item_number;
-    }
-
-    public void setItem_number(String item_number) {
-        this.item_number = item_number;
     }
 
     public Boolean getPurchase_no_place() {
@@ -311,5 +303,13 @@ public class PlanPosition {
 
     public void setFiles(Collection<PlanPositionFile> files) {
         this.files = files;
+    }
+
+    public Integer getItem_number() {
+        return item_number;
+    }
+
+    public void setItem_number(Integer item_number) {
+        this.item_number = item_number;
     }
 }
