@@ -216,4 +216,12 @@ public abstract class AbstractPurchase223<E extends AbstractEntity> extends Comm
     public void setSmallVolumes(SmallVolumes smallVolumes) {
         this.smallVolumes = smallVolumes;
     }
+
+    public boolean isHighTech() {
+        return highTech;
+    }
+
+    public void setHighTech(boolean highTech) {
+        this.highTech = highTech;
+    }
 }

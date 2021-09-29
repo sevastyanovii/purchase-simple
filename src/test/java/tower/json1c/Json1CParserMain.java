@@ -96,6 +96,7 @@ public class Json1CParserMain {
         Assertions.assertNotNull(purchase223.getPurchasesDescription());
         Assertions.assertNotNull(purchase223.getPurchaseMethod());
         Assertions.assertEquals(SmallVolumes.NONE, purchase223.getSmallVolumes());
+        Assertions.assertEquals(false, purchase223.isHighTech());
     }
 
     private Purchase223 createPurchase(Organization organization) throws Throwable {
@@ -118,6 +119,8 @@ public class Json1CParserMain {
         } else {
             purchase223.setSmallVolumes(SmallVolumes.NONE);
         }
+
+        purchase223.setHighTech(request.getPlan_position().getHightech_procurement());
 
         purchase223Facade.persist(purchase223);
 
