@@ -13,6 +13,7 @@ import ru.tower.json1c.parse.Request;
 import ru.tower.purchase.entity.Organization;
 import ru.tower.purchase.entity.Purchase223;
 import ru.tower.purchase.entity.PurchasePlan223;
+import ru.tower.purchase.entity.SmallVolumes;
 import ru.tower.purchase.entity.nsi.NsiStatus;
 
 import javax.persistence.EntityManager;
@@ -94,6 +95,7 @@ public class Json1CParserMain {
         Assertions.assertTrue(purchase223.getId() > 0);
         Assertions.assertNotNull(purchase223.getPurchasesDescription());
         Assertions.assertNotNull(purchase223.getPurchaseMethod());
+        Assertions.assertEquals(SmallVolumes.NONE, purchase223.getSmallVolumes());
     }
 
     private Purchase223 createPurchase(Organization organization) throws Throwable {
@@ -108,6 +110,14 @@ public class Json1CParserMain {
         purchase223.setPurchasesDescription(purchasesDescriptionFacade.findByName(request.getPlan_position().getSubject_contract()));
         purchase223.setMinRequirements(request.getPlan_position().getRequirements());
         purchase223.setPurchaseMethod(nsiAstPurchaseTypeFacade.findPurchaseType(request.getPlan_position().getId_purchase_method()));
+        BigDecimal rubAmount = request.getPlan_position().getContract_amount_rub();
+        if (rubAmount.compareTo(new BigDecimal("100000")) <=0 ) {
+            purchase223.setSmallVolumes(SmallVolumes.UP_TO_100);
+        } else if (rubAmount.compareTo(new BigDecimal("500000")) <=0 ){
+            purchase223.setSmallVolumes(SmallVolumes.UP_TO_500);
+        } else {
+            purchase223.setSmallVolumes(SmallVolumes.NONE);
+        }
 
         purchase223Facade.persist(purchase223);
 

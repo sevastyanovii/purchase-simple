@@ -84,9 +84,9 @@ public abstract class AbstractPurchase223<E extends AbstractEntity> extends Comm
     /**
      * Признак закупки малого объема
      */
-//    @Enumerated(EnumType.STRING)
-//    @Column(name = "small_volumes")
-//    private SmallVolumes smallVolumes;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "small_volumes")
+    private SmallVolumes smallVolumes;
 
     /**
      * Закупка в электронной форме
@@ -207,5 +207,13 @@ public abstract class AbstractPurchase223<E extends AbstractEntity> extends Comm
 
     public void setPurchaseMethod(NsiAstPurchaseType purchaseMethod) {
         this.purchaseMethod = purchaseMethod;
+    }
+
+    public SmallVolumes getSmallVolumes() {
+        return smallVolumes;
+    }
+
+    public void setSmallVolumes(SmallVolumes smallVolumes) {
+        this.smallVolumes = smallVolumes;
     }
 }
