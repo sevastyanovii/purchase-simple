@@ -23,8 +23,7 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static ru.tower.json1c.PersistenceSupport.commitTransaction;
 import static ru.tower.json1c.PersistenceSupport.startTransaction;
 import static ru.tower.purchase.entity.NMCKInstructions.INFORMATION;
@@ -39,6 +38,7 @@ public class Json1CParserMain {
     private final PurchasePlan223ItemLinkFacade purchasePlan223ItemFacade = new PurchasePlan223ItemLinkFacade();
     private final NsiPurchasesDescriptionFacade purchasesDescriptionFacade = new NsiPurchasesDescriptionFacade();
     private final NsiAstPurchaseTypeFacade nsiAstPurchaseTypeFacade = new NsiAstPurchaseTypeFacade();
+    private final NsiBidPurchaseCategorySMSPFacade nsiBidPurchaseCategorySMSPFacade = new NsiBidPurchaseCategorySMSPFacade();
 
     @Test public void test() {
         EntityManager em = PersistenceSupport.getEntityManager();
@@ -90,13 +90,15 @@ public class Json1CParserMain {
 
     @Test public void test4() throws Throwable {
         Organization organization = organizationFacade.find(Organization.class, 23L);
-        Assertions.assertNotNull(organization);
+        assertNotNull(organization);
         Purchase223 purchase223 = createPurchase(organization);
         Assertions.assertTrue(purchase223.getId() > 0);
-        Assertions.assertNotNull(purchase223.getPurchasesDescription());
-        Assertions.assertNotNull(purchase223.getPurchaseMethod());
-        Assertions.assertEquals(SmallVolumes.NONE, purchase223.getSmallVolumes());
-        Assertions.assertEquals(false, purchase223.isHighTech());
+        assertNotNull(purchase223.getPurchasesDescription());
+        assertNotNull(purchase223.getPurchaseMethod());
+        assertEquals(SmallVolumes.NONE, purchase223.getSmallVolumes());
+        assertFalse(purchase223.isHighTech());
+        assertNotNull(purchase223.getPurchasingCategory());
+
     }
 
     private Purchase223 createPurchase(Organization organization) throws Throwable {
@@ -118,6 +120,10 @@ public class Json1CParserMain {
             purchase223.setSmallVolumes(SmallVolumes.UP_TO_500);
         } else {
             purchase223.setSmallVolumes(SmallVolumes.NONE);
+        }
+
+        if (request.getPlan_position().getUnaccounted_purchase_1352()) {
+            purchase223.setPurchasingCategory(nsiBidPurchaseCategorySMSPFacade.findByGuid(request.getPlan_position().getId_unaccounted_purchase()));
         }
 
         purchase223.setHighTech(request.getPlan_position().getHightech_procurement());

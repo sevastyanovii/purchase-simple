@@ -104,7 +104,7 @@ public abstract class AbstractPurchase223<E extends AbstractEntity> extends Comm
      * Закупка товаров, работ, услуг, удовлетворяющих критериям отнесения к инновационной продукции, высокотехнологичной продукции
      */
     @Column(name = "high_tech", columnDefinition = "boolean default false", nullable = false)
-    private boolean highTech;
+    private Boolean highTech;
 
     /**
      * Срок размещения извещения (плановый)

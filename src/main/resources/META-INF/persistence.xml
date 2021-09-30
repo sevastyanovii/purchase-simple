@@ -12,6 +12,7 @@
         <class>ru.tower.purchase.entity.nsi.NsiAstPurchaseTypeTreeAbstract</class>
         <class>ru.tower.purchase.entity.nsi.NsiAstPurchaseType</class>
         <class>ru.tower.purchase.entity.nsi.NsiAdditionalConditionType</class>
+        <class>ru.tower.purchase.entity.nsi.NsiBidPurchaseCategorySMSP</class>
         <class>ru.tower.purchase.entity.Organization</class>
         <class>ru.tower.purchase.entity.PurchasePlan223</class>
         <class>ru.tower.purchase.entity.PurchasePlan223Item</class>
