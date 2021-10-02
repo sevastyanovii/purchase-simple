@@ -1,18 +1,15 @@
 package tower.json1c;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import ru.tower.json1c.PersistenceSupport;
-import ru.tower.json1c.Purchase223Facade;
-import ru.tower.json1c.db.*;
+import ru.tower.json1c.db.OrganizationFacade;
+import ru.tower.json1c.db.PurchasePlan223Facade;
+import ru.tower.json1c.db.YearVolumeLongFacade;
 import ru.tower.json1c.map.SimpleEntity;
-import ru.tower.json1c.parse.AmountYear;
+import ru.tower.json1c.parse.JsonPurchasePositionParser;
 import ru.tower.json1c.parse.PlanPositionFile;
 import ru.tower.json1c.parse.Request;
 import ru.tower.purchase.entity.*;
-import ru.tower.purchase.entity.nsi.NsiStatus;
 
 import javax.persistence.EntityManager;
 import java.io.IOException;
@@ -22,41 +19,44 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static java.lang.String.format;
-import static java.util.stream.IntStream.rangeClosed;
 import static org.junit.jupiter.api.Assertions.*;
-import static ru.tower.json1c.ParseUtils.assertThat;
-import static ru.tower.json1c.ParseUtils.year;
-import static ru.tower.json1c.PersistenceSupport.commitTransaction;
-import static ru.tower.json1c.PersistenceSupport.startTransaction;
 import static ru.tower.json1c.db.QueryParam.param;
-import static ru.tower.purchase.entity.NMCKInstructions.INFORMATION;
+import static ru.tower.json1c.parse.JsonPurchasePositionParser.parseJson;
 
 public class Json1CParserMain {
 
-    private final NsiStatusFacade nsiStatusFacade = new NsiStatusFacade();
-    private final Purchase223Facade purchase223Facade = new Purchase223Facade();
-    private final PurchasePlan223Facade purchasePlan223Facade = new PurchasePlan223Facade();
-    private final OrganizationFacade organizationFacade = new OrganizationFacade();
-    private final PurchasePlan223ItemFacade plan223ItemFacade = new PurchasePlan223ItemFacade();
-    private final PurchasePlan223ItemLinkFacade purchasePlan223ItemFacade = new PurchasePlan223ItemLinkFacade();
-    private final NsiPurchasesDescriptionFacade purchasesDescriptionFacade = new NsiPurchasesDescriptionFacade();
-    private final NsiAstPurchaseTypeFacade nsiAstPurchaseTypeFacade = new NsiAstPurchaseTypeFacade();
-    private final NsiBidPurchaseCategorySMSPFacade nsiBidPurchaseCategorySMSPFacade = new NsiBidPurchaseCategorySMSPFacade();
-    private final YearVolumeLongFacade yearVolumeLongFacade = new YearVolumeLongFacade();
+    private static EntityManager em = PersistenceSupport.getEntityManager();
+
+    @BeforeEach
+    public void before() {
+        PersistenceSupport.startTransaction();
+    }
+
+    @AfterEach
+    public void after() {
+        try {
+            PersistenceSupport.commitTransaction();
+        } catch (Exception e) {
+            System.out.println("Error on commit: " + e.getMessage());
+        }
+    }
+
+    @AfterAll
+    public static void afterAll() {
+        try {
+            PersistenceSupport.getEntityManager().close();
+        } catch (Exception e) {
+            System.out.println("Error on close EM: " + e.getMessage());
+        }
+    }
 
     @Test public void test() {
-        EntityManager em = PersistenceSupport.getEntityManager();
-        em.getTransaction().begin();
 
         SimpleEntity entity = new SimpleEntity();
         String name = System.currentTimeMillis()+"абвгйиъ";
         System.out.println(name);
         entity.setName(name);
         em.persist(entity);
-        em.getTransaction().commit();
-        em.close();
-
         assertNotNull(entity.getId());
     }
 
@@ -90,13 +90,13 @@ public class Json1CParserMain {
     }
 
     @Test public void test5() {
-        PurchasePlan223 plan223 = purchasePlan223Facade.find(PurchasePlan223.class, 1L);
+        PurchasePlan223 plan223 = new PurchasePlan223Facade().find(PurchasePlan223.class, 1L);
     }
 
     @Test public void test4() throws Throwable {
-        Organization organization = organizationFacade.find(Organization.class, 23L);
+        Organization organization = new OrganizationFacade().find(Organization.class, 23L);
         assertNotNull(organization);
-        Purchase223 purchase223 = createPurchase(organization);
+        Purchase223 purchase223 = new JsonPurchasePositionParser(getExampleBody()).createPurchase(organization);
         Assertions.assertTrue(purchase223.getId() > 0);
         assertNotNull(purchase223.getPurchasesDescription());
         assertNotNull(purchase223.getPurchaseMethod());
@@ -104,77 +104,10 @@ public class Json1CParserMain {
         assertFalse(purchase223.isHighTech());
         assertNotNull(purchase223.getPurchasingCategory());
 
-        List<YearVolumeLong> longs = yearVolumeLongFacade.select("from YearVolumeLong l where l.purchase = :purchase"
+        List<YearVolumeLong> longs = new YearVolumeLongFacade().select("from YearVolumeLong l where l.purchase = :purchase"
             , param("purchase", purchase223));
         assertEquals(2, longs.size());
         assertTrue(longs.stream().allMatch(l -> l.getYear() > 0 && l.getYearPrice().compareTo(new BigDecimal("0")) > 0));
-    }
-
-    private Purchase223 createPurchase(Organization organization) throws Throwable {
-        Request request = parseJson(getExampleBody());
-
-        startTransaction();
-
-        Purchase223 purchase223 = new Purchase223();
-        purchase223.setNsiStatus(nsiStatusFacade.find(NsiStatus.class, Long.parseLong(request.getPlan_position().getPosition_status())));
-        purchase223.setOrganization(organization);
-        purchase223.setNmckInstruction(INFORMATION);
-        purchase223.setPurchasesDescription(purchasesDescriptionFacade.findByName(request.getPlan_position().getSubject_contract()));
-        purchase223.setMinRequirements(request.getPlan_position().getRequirements());
-        purchase223.setPurchaseMethod(nsiAstPurchaseTypeFacade.findPurchaseType(request.getPlan_position().getId_purchase_method()));
-        BigDecimal rubAmount = request.getPlan_position().getContract_amount_rub();
-        if (rubAmount.compareTo(new BigDecimal("100000")) <=0 ) {
-            purchase223.setSmallVolumes(SmallVolumes.UP_TO_100);
-        } else if (rubAmount.compareTo(new BigDecimal("500000")) <=0 ){
-            purchase223.setSmallVolumes(SmallVolumes.UP_TO_500);
-        } else {
-            purchase223.setSmallVolumes(SmallVolumes.NONE);
-        }
-
-        if (request.getPlan_position().getUnaccounted_purchase_1352()) {
-            purchase223.setPurchasingCategory(nsiBidPurchaseCategorySMSPFacade.findByGuid(request.getPlan_position().getId_unaccounted_purchase()));
-        }
-
-        purchase223.setHighTech(request.getPlan_position().getHightech_procurement());
-        purchase223.setContractTime(request.getPlan_position().getDate_notification());
-        purchase223.setContractTerm(request.getPlan_position().getTerm_execution_contract());
-
-        purchase223Facade.persist(purchase223);
-
-        if (!year(purchase223.getContractTime()).equals(year(purchase223.getContractTerm()))) {
-            assertThat(purchase223.getContractTerm().after(purchase223.getContractTime())
-                    , () -> new RuntimeException("Срок размещения плановый должен быть меньше срока исполнения"));
-
-            BigDecimal sumLong = request.getPlan_position().getAmounts_by_year()
-                    .stream().map(AmountYear::getAmount).reduce(BigDecimal::add).get();
-            assertThat(sumLong.equals(request.getPlan_position().getContract_amount())
-                    , () -> new RuntimeException(format("Сумма по годам планирования '%s' не равна НМЦ: '%s'", sumLong, request.getPlan_position().getContract_amount())));
-
-            int[] years = rangeClosed(year(purchase223.getContractTime()), year(purchase223.getContractTerm())).toArray();
-            if (request.getPlan_position().getAmounts_by_year().size() != years.length) {
-                throw new RuntimeException(format("Разбивка по годам планирования ('%s') не соответствует '%s'"
-                        , request.getPlan_position().getAmounts_by_year().size(), years.length));
-            }
-            for (int year : years){
-                AmountYear amountYear = request.getPlan_position().getAmount(year);
-                YearVolumeLong yearVolumeLong = new YearVolumeLong();
-                yearVolumeLong.setGuid(yearVolumeLongFacade.randomUUID());
-                yearVolumeLong.setPurchase(purchase223);
-                yearVolumeLong.setYear(amountYear.getYear());
-                yearVolumeLong.setYearPrice(amountYear.getAmount());
-                yearVolumeLongFacade.persist(yearVolumeLong);
-            }
-        }
-
-        commitTransaction();
-        return purchase223;
-    }
-
-    private Request parseJson(String jsonString) {
-        Gson gson = new GsonBuilder()
-                .setDateFormat("yyyy-MM-dd'T'hh:mm:ss")
-                .create();
-        return gson.fromJson(jsonString, Request.class);
     }
 
     private String getExampleBody() {
