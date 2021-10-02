@@ -8,12 +8,10 @@ import ru.tower.json1c.PersistenceSupport;
 import ru.tower.json1c.Purchase223Facade;
 import ru.tower.json1c.db.*;
 import ru.tower.json1c.map.SimpleEntity;
+import ru.tower.json1c.parse.AmountYear;
 import ru.tower.json1c.parse.PlanPositionFile;
 import ru.tower.json1c.parse.Request;
-import ru.tower.purchase.entity.Organization;
-import ru.tower.purchase.entity.Purchase223;
-import ru.tower.purchase.entity.PurchasePlan223;
-import ru.tower.purchase.entity.SmallVolumes;
+import ru.tower.purchase.entity.*;
 import ru.tower.purchase.entity.nsi.NsiStatus;
 
 import javax.persistence.EntityManager;
@@ -22,10 +20,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
+import static java.lang.String.format;
+import static java.util.stream.IntStream.rangeClosed;
 import static org.junit.jupiter.api.Assertions.*;
+import static ru.tower.json1c.ParseUtils.assertThat;
+import static ru.tower.json1c.ParseUtils.year;
 import static ru.tower.json1c.PersistenceSupport.commitTransaction;
 import static ru.tower.json1c.PersistenceSupport.startTransaction;
+import static ru.tower.json1c.db.QueryParam.param;
 import static ru.tower.purchase.entity.NMCKInstructions.INFORMATION;
 
 public class Json1CParserMain {
@@ -39,6 +43,7 @@ public class Json1CParserMain {
     private final NsiPurchasesDescriptionFacade purchasesDescriptionFacade = new NsiPurchasesDescriptionFacade();
     private final NsiAstPurchaseTypeFacade nsiAstPurchaseTypeFacade = new NsiAstPurchaseTypeFacade();
     private final NsiBidPurchaseCategorySMSPFacade nsiBidPurchaseCategorySMSPFacade = new NsiBidPurchaseCategorySMSPFacade();
+    private final YearVolumeLongFacade yearVolumeLongFacade = new YearVolumeLongFacade();
 
     @Test public void test() {
         EntityManager em = PersistenceSupport.getEntityManager();
@@ -99,6 +104,10 @@ public class Json1CParserMain {
         assertFalse(purchase223.isHighTech());
         assertNotNull(purchase223.getPurchasingCategory());
 
+        List<YearVolumeLong> longs = yearVolumeLongFacade.select("from YearVolumeLong l where l.purchase = :purchase"
+            , param("purchase", purchase223));
+        assertEquals(2, longs.size());
+        assertTrue(longs.stream().allMatch(l -> l.getYear() > 0 && l.getYearPrice().compareTo(new BigDecimal("0")) > 0));
     }
 
     private Purchase223 createPurchase(Organization organization) throws Throwable {
@@ -127,8 +136,35 @@ public class Json1CParserMain {
         }
 
         purchase223.setHighTech(request.getPlan_position().getHightech_procurement());
+        purchase223.setContractTime(request.getPlan_position().getDate_notification());
+        purchase223.setContractTerm(request.getPlan_position().getTerm_execution_contract());
 
         purchase223Facade.persist(purchase223);
+
+        if (!year(purchase223.getContractTime()).equals(year(purchase223.getContractTerm()))) {
+            assertThat(purchase223.getContractTerm().after(purchase223.getContractTime())
+                    , () -> new RuntimeException("Срок размещения плановый должен быть меньше срока исполнения"));
+
+            BigDecimal sumLong = request.getPlan_position().getAmounts_by_year()
+                    .stream().map(a -> a.getAmount()).reduce((x,y) -> x.add(y)).get();
+            assertThat(sumLong.equals(request.getPlan_position().getContract_amount())
+                    , () -> new RuntimeException(format("Сумма по годам планирования '%s' не равна НМЦ: '%s'", sumLong, request.getPlan_position().getContract_amount())));
+
+            int yearCount = year(purchase223.getContractTerm()) - year(purchase223.getContractTime()) + 1;
+            if (request.getPlan_position().getAmounts_by_year().size() != yearCount) {
+                throw new RuntimeException(format("Разбивка по годам планирования ('%s') не соответствует '%s'"
+                        , request.getPlan_position().getAmounts_by_year().size(), yearCount));
+            }
+            for (int year : rangeClosed(year(purchase223.getContractTime()), year(purchase223.getContractTerm())).toArray()){
+                AmountYear amountYear = request.getPlan_position().getAmount(year);
+                YearVolumeLong yearVolumeLong = new YearVolumeLong();
+                yearVolumeLong.setGuid(yearVolumeLongFacade.randomUUID());
+                yearVolumeLong.setPurchase(purchase223);
+                yearVolumeLong.setYear(amountYear.getYear());
+                yearVolumeLong.setYearPrice(amountYear.getAmount());
+                yearVolumeLongFacade.persist(yearVolumeLong);
+            }
+        }
 
         commitTransaction();
         return purchase223;

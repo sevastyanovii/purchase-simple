@@ -224,4 +224,20 @@ public abstract class AbstractPurchase223<E extends AbstractEntity> extends Comm
     public void setHighTech(boolean highTech) {
         this.highTech = highTech;
     }
+
+    public Date getContractTime() {
+        return contractTime;
+    }
+
+    public void setContractTime(Date contractTime) {
+        this.contractTime = contractTime;
+    }
+
+    public Date getContractTerm() {
+        return contractTerm;
+    }
+
+    public void setContractTerm(Date contractTerm) {
+        this.contractTerm = contractTerm;
+    }
 }

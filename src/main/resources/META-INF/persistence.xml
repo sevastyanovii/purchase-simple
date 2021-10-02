@@ -17,6 +17,7 @@
         <class>ru.tower.purchase.entity.PurchasePlan223</class>
         <class>ru.tower.purchase.entity.PurchasePlan223Item</class>
         <class>ru.tower.purchase.entity.PurchasePlan223ItemLink</class>
+        <class>ru.tower.purchase.entity.YearVolumeLong</class>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL10Dialect"/>
             <property name="hibernate.connection.url"

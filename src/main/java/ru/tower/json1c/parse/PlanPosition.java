@@ -6,6 +6,8 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
 
+import static java.lang.String.format;
+
 public class PlanPosition {
     private String id_sbkr;
     private String number;
@@ -48,6 +50,8 @@ public class PlanPosition {
     private Collection<ClassifierCode> classifier_codes;
 
     private Collection<PlanPositionFile> files;
+
+    private Collection<AmountYear> amounts_by_year;
 
     public String getId_sbkr() {
         return id_sbkr;
@@ -311,5 +315,18 @@ public class PlanPosition {
 
     public void setItem_number(Integer item_number) {
         this.item_number = item_number;
+    }
+
+    public Collection<AmountYear> getAmounts_by_year() {
+        return amounts_by_year;
+    }
+
+    public void setAmounts_by_year(Collection<AmountYear> amounts_by_year) {
+        this.amounts_by_year = amounts_by_year;
+    }
+
+    public AmountYear getAmount(Integer year) {
+        return amounts_by_year.stream().filter(a -> a.getYear().equals(year))
+                .findFirst().orElseThrow(() -> new RuntimeException(format("Не найден объем оплаты за: %s", year)));
     }
 }

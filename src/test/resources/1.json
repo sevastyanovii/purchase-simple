@@ -20,7 +20,19 @@
     "multiplicity": 1,
     "course_date": "2021-01-01T00:00:00",
     "date_notification": "2021-01-12T00:00:00",
-    "term_execution_contract": "2021-01-12T00:00:00",
+    "term_execution_contract": "2022-01-12T00:00:00",
+    "amounts_by_year": [
+      {
+        "year": 2021,
+        "budget_section": "CAPEX",
+        "amount": "10000000.00"
+      },
+      {
+        "year": 2022,
+        "budget_section": "CAPEX",
+        "amount": "9800000.00"
+      }
+    ],
     "id_purchase_method": "93eebd5b-2ae7-416a-9f95-da5c535c2df8",
     "electronic_form": true,
     "smp": false,
