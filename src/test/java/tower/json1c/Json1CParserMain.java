@@ -146,16 +146,16 @@ public class Json1CParserMain {
                     , () -> new RuntimeException("Срок размещения плановый должен быть меньше срока исполнения"));
 
             BigDecimal sumLong = request.getPlan_position().getAmounts_by_year()
-                    .stream().map(a -> a.getAmount()).reduce((x,y) -> x.add(y)).get();
+                    .stream().map(AmountYear::getAmount).reduce(BigDecimal::add).get();
             assertThat(sumLong.equals(request.getPlan_position().getContract_amount())
                     , () -> new RuntimeException(format("Сумма по годам планирования '%s' не равна НМЦ: '%s'", sumLong, request.getPlan_position().getContract_amount())));
 
-            int yearCount = year(purchase223.getContractTerm()) - year(purchase223.getContractTime()) + 1;
-            if (request.getPlan_position().getAmounts_by_year().size() != yearCount) {
+            int[] years = rangeClosed(year(purchase223.getContractTime()), year(purchase223.getContractTerm())).toArray();
+            if (request.getPlan_position().getAmounts_by_year().size() != years.length) {
                 throw new RuntimeException(format("Разбивка по годам планирования ('%s') не соответствует '%s'"
-                        , request.getPlan_position().getAmounts_by_year().size(), yearCount));
+                        , request.getPlan_position().getAmounts_by_year().size(), years.length));
             }
-            for (int year : rangeClosed(year(purchase223.getContractTime()), year(purchase223.getContractTerm())).toArray()){
+            for (int year : years){
                 AmountYear amountYear = request.getPlan_position().getAmount(year);
                 YearVolumeLong yearVolumeLong = new YearVolumeLong();
                 yearVolumeLong.setGuid(yearVolumeLongFacade.randomUUID());
