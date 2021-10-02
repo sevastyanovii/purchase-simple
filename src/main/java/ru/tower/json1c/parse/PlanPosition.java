@@ -24,7 +24,7 @@ public class PlanPosition {
     private String subject_contract;
     private String requirements;
     private BigDecimal contract_amount;
-    private Integer currency;
+    private String currency;
     private BigDecimal contract_amount_rub;
     private BigDecimal currency_exchange_rate;
     private Integer multiplicity;
@@ -133,11 +133,11 @@ public class PlanPosition {
         this.contract_amount = contract_amount;
     }
 
-    public Integer getCurrency() {
+    public String getCurrency() {
         return currency;
     }
 
-    public void setCurrency(Integer currency) {
+    public void setCurrency(String currency) {
         this.currency = currency;
     }
 

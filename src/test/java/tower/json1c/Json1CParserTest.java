@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static ru.tower.json1c.db.QueryParam.param;
 import static ru.tower.json1c.parse.JsonPurchasePositionParser.parseJson;
 
-public class Json1CParserMain {
+public class Json1CParserTest {
 
     private static EntityManager em = PersistenceSupport.getEntityManager();
 
@@ -108,6 +108,7 @@ public class Json1CParserMain {
             , param("purchase", purchase223));
         assertEquals(2, longs.size());
         assertTrue(longs.stream().allMatch(l -> l.getYear() > 0 && l.getYearPrice().compareTo(new BigDecimal("0")) > 0));
+        assertNotNull(purchase223.getExchangeRateTime());
     }
 
     private String getExampleBody() {

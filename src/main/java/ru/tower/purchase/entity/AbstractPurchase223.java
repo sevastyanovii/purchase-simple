@@ -1,5 +1,6 @@
 package ru.tower.purchase.entity;
 
+import ru.tower.purchase.entity.nsi.NsiAstCurrency;
 import ru.tower.purchase.entity.nsi.NsiAstPurchaseType;
 import ru.tower.purchase.entity.nsi.NsiPurchasesDescription;
 import ru.tower.purchase.entity.nsi.NsiStatus;
@@ -164,6 +165,13 @@ public abstract class AbstractPurchase223<E extends AbstractEntity> extends Comm
     @Column(name = "nmck_instruction", length = 16, nullable = false)
     private NMCKInstructions nmckInstruction;
 
+    /**
+     * Валюта Сбербанк
+     */
+    @JoinColumn(name = "ast_currency_id", referencedColumnName = "id")
+    @ManyToOne
+    private NsiAstCurrency astCurrency;
+
     @Override
     public NsiStatus getNsiStatus() {
         return nsiStatus;
@@ -239,5 +247,41 @@ public abstract class AbstractPurchase223<E extends AbstractEntity> extends Comm
 
     public void setContractTerm(Date contractTerm) {
         this.contractTerm = contractTerm;
+    }
+
+    public void setStartPrice(BigDecimal startPrice) {
+        this.startPrice = startPrice;
+    }
+
+    public BigDecimal getStartPriceRUR() {
+        return startPriceRUR;
+    }
+
+    public void setStartPriceRUR(BigDecimal startPriceRUR) {
+        this.startPriceRUR = startPriceRUR;
+    }
+
+    public String getExchangeRate() {
+        return exchangeRate;
+    }
+
+    public void setExchangeRate(String exchangeRate) {
+        this.exchangeRate = exchangeRate;
+    }
+
+    public NsiAstCurrency getAstCurrency() {
+        return astCurrency;
+    }
+
+    public void setAstCurrency(NsiAstCurrency astCurrency) {
+        this.astCurrency = astCurrency;
+    }
+
+    public Date getExchangeRateTime() {
+        return exchangeRateTime;
+    }
+
+    public void setExchangeRateTime(Date exchangeRateTime) {
+        this.exchangeRateTime = exchangeRateTime;
     }
 }

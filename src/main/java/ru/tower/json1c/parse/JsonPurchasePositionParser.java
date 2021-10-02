@@ -30,16 +30,18 @@ public class JsonPurchasePositionParser {
     private final NsiAstPurchaseTypeFacade nsiAstPurchaseTypeFacade = new NsiAstPurchaseTypeFacade();
     private final NsiBidPurchaseCategorySMSPFacade nsiBidPurchaseCategorySMSPFacade = new NsiBidPurchaseCategorySMSPFacade();
     private final YearVolumeLongFacade yearVolumeLongFacade = new YearVolumeLongFacade();
+    private final NsiAstCurrencyFacade nsiAstCurrencyFacade = new NsiAstCurrencyFacade();
 
     private final Request purchaseRequest;
+    private final Purchase223 purchase223;
 
     public JsonPurchasePositionParser(String jsonString) {
         purchaseRequest = parseJson(jsonString);
+        purchase223 = new Purchase223();
     }
 
     public Purchase223 createPurchase(Organization organization) throws Throwable {
 
-        Purchase223 purchase223 = new Purchase223();
         purchase223.setNsiStatus(nsiStatusFacade.find(NsiStatus.class, Long.parseLong(purchaseRequest.getPlan_position().getPosition_status())));
         purchase223.setOrganization(organization);
         purchase223.setNmckInstruction(INFORMATION);
@@ -63,8 +65,19 @@ public class JsonPurchasePositionParser {
         purchase223.setContractTime(purchaseRequest.getPlan_position().getDate_notification());
         purchase223.setContractTerm(purchaseRequest.getPlan_position().getTerm_execution_contract());
 
+        purchase223.setStartPrice(purchaseRequest.getPlan_position().getContract_amount());
+        purchase223.setStartPriceRUR(purchaseRequest.getPlan_position().getContract_amount_rub());
+        purchase223.setExchangeRate(purchaseRequest.getPlan_position().getCurrency_exchange_rate().toString());
+        purchase223.setAstCurrency(nsiAstCurrencyFacade.findCurrency(purchaseRequest.getPlan_position().getCurrency()));
+        purchase223.setExchangeRateTime(purchaseRequest.getPlan_position().getCourse_date());
         purchase223Facade.persist(purchase223);
 
+        setYearDiffData();
+
+        return purchase223;
+    }
+
+    private void setYearDiffData() {
         if (!year(purchase223.getContractTime()).equals(year(purchase223.getContractTerm()))) {
             assertThat(purchase223.getContractTerm().after(purchase223.getContractTime())
                     , () -> new RuntimeException("Срок размещения плановый должен быть меньше срока исполнения"));
@@ -89,9 +102,6 @@ public class JsonPurchasePositionParser {
                 yearVolumeLongFacade.persist(yearVolumeLong);
             }
         }
-
-//        commitTransaction();
-        return purchase223;
     }
 
     public static Request parseJson(String jsonString) {
