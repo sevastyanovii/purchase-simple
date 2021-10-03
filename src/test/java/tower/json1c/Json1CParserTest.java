@@ -3,6 +3,7 @@ package tower.json1c;
 import org.junit.jupiter.api.*;
 import ru.tower.json1c.PersistenceSupport;
 import ru.tower.json1c.db.OrganizationFacade;
+import ru.tower.json1c.db.PurchaseItem223Facade;
 import ru.tower.json1c.db.PurchasePlan223Facade;
 import ru.tower.json1c.db.YearVolumeLongFacade;
 import ru.tower.json1c.map.SimpleEntity;
@@ -97,6 +98,8 @@ public class Json1CParserTest {
         Organization organization = new OrganizationFacade().find(Organization.class, 23L);
         assertNotNull(organization);
         Purchase223 purchase223 = new JsonPurchasePositionParser(getExampleBody()).createPurchase(organization);
+        System.out.println("purchase id = " + purchase223.getId());
+
         Assertions.assertTrue(purchase223.getId() > 0);
         assertNotNull(purchase223.getPurchasesDescription());
         assertNotNull(purchase223.getPurchaseMethod());
@@ -109,6 +112,12 @@ public class Json1CParserTest {
         assertEquals(2, longs.size());
         assertTrue(longs.stream().allMatch(l -> l.getYear() > 0 && l.getYearPrice().compareTo(new BigDecimal("0")) > 0));
         assertNotNull(purchase223.getExchangeRateTime());
+        assertEquals(2, new PurchaseItem223Facade().select("from PurchaseItem223 i where i.purchase = :purchase", param("purchase", purchase223)).size());
+        assertNotNull(purchase223.getDeliveryPlace223Templ());
+        assertTrue(new PurchaseItem223Facade().select("from PurchaseItem223 i where purchase = :purchase", param("purchase", purchase223))
+                .stream().allMatch(c -> null != c.getDeliveryPlace()));
+        assertEquals(new BigDecimal("45.3838").toString(), purchase223.getExchangeRate());
+
     }
 
     private String getExampleBody() {

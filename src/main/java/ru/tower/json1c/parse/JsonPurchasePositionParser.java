@@ -4,13 +4,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import ru.tower.json1c.Purchase223Facade;
 import ru.tower.json1c.db.*;
-import ru.tower.purchase.entity.Organization;
-import ru.tower.purchase.entity.Purchase223;
-import ru.tower.purchase.entity.SmallVolumes;
-import ru.tower.purchase.entity.YearVolumeLong;
+import ru.tower.purchase.entity.*;
+import ru.tower.purchase.entity.nsi.NsiOkato;
 import ru.tower.purchase.entity.nsi.NsiStatus;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import static java.lang.String.format;
 import static java.util.stream.IntStream.rangeClosed;
@@ -31,6 +30,14 @@ public class JsonPurchasePositionParser {
     private final NsiBidPurchaseCategorySMSPFacade nsiBidPurchaseCategorySMSPFacade = new NsiBidPurchaseCategorySMSPFacade();
     private final YearVolumeLongFacade yearVolumeLongFacade = new YearVolumeLongFacade();
     private final NsiAstCurrencyFacade nsiAstCurrencyFacade = new NsiAstCurrencyFacade();
+    private final NsiOkved2Facade nsiOkved2Facade = new NsiOkved2Facade();
+    private final PurchaseItem223Facade purchaseItem223Facade = new PurchaseItem223Facade();
+    private final NsiOkeiFacade nsiOkeiFacade = new NsiOkeiFacade();
+    private final NsiOkpd2Facade nsiOkpd2Facade = new NsiOkpd2Facade();
+    private final NsiOkatoFacade nsiOkatoFacade = new NsiOkatoFacade();
+    private final NsiFederalDistrictFacade nsiFederalDistrictFacade = new NsiFederalDistrictFacade();
+    private final DeliveryPlace223Facade deliveryPlace223Facade = new DeliveryPlace223Facade();
+    private final DeliveryPlace223TemplFacade deliveryPlace223TemplFacade = new DeliveryPlace223TemplFacade();
 
     private final Request purchaseRequest;
     private final Purchase223 purchase223;
@@ -67,12 +74,15 @@ public class JsonPurchasePositionParser {
 
         purchase223.setStartPrice(purchaseRequest.getPlan_position().getContract_amount());
         purchase223.setStartPriceRUR(purchaseRequest.getPlan_position().getContract_amount_rub());
-        purchase223.setExchangeRate(purchaseRequest.getPlan_position().getCurrency_exchange_rate().toString());
+        purchase223.setExchangeRate(purchaseRequest.getPlan_position()
+                .getCurrency_exchange_rate().divide(BigDecimal.valueOf(purchaseRequest.getPlan_position().getMultiplicity()), 4, RoundingMode.HALF_UP).toString());
         purchase223.setAstCurrency(nsiAstCurrencyFacade.findCurrency(purchaseRequest.getPlan_position().getCurrency()));
         purchase223.setExchangeRateTime(purchaseRequest.getPlan_position().getCourse_date());
         purchase223Facade.persist(purchase223);
 
         setYearDiffData();
+
+        setClassifiers();
 
         return purchase223;
     }
@@ -99,9 +109,46 @@ public class JsonPurchasePositionParser {
                 yearVolumeLong.setPurchase(purchase223);
                 yearVolumeLong.setYear(amountYear.getYear());
                 yearVolumeLong.setYearPrice(amountYear.getAmount());
+                yearVolumeLong.setYearPriceRUR(new BigDecimal("0"));
                 yearVolumeLongFacade.persist(yearVolumeLong);
             }
         }
+    }
+
+    private void setClassifiers() {
+        purchase223.setGeneralAddress(purchaseRequest.getPlan_position().getClassifier_codes()
+                .stream().map(ClassifierCode::getRegion).distinct().count() <= 1);
+        if (purchase223.isGeneralAddress()) {
+            purchaseRequest.getPlan_position().getClassifier_codes().stream().findFirst().ifPresent(c -> {
+                DeliveryPlace223Templ place223 = new DeliveryPlace223Templ();
+                place223.setOkato(c.getOkato());
+                place223.setRegion(c.getRegion());
+                place223.setNsiOkato(nsiOkatoFacade.findByCode(NsiOkato.class, c.getOkato()));
+                place223.setAddress("НЕТ");
+                deliveryPlace223TemplFacade.persist(place223);
+                purchase223.setDeliveryPlace223Templ(place223);
+                purchase223Facade.update(purchase223);
+            });
+        }
+        purchaseRequest.getPlan_position().getClassifier_codes().forEach(e -> {
+            PurchaseItem223 item223 = new PurchaseItem223();
+            item223.setPurchase(purchase223);
+            item223.setOkved2(nsiOkved2Facade.findByCode(e.getOkved_2()));
+            item223.setNsiOkei(nsiOkeiFacade.findByCode(e.getUnit_measurement()));
+            item223.setPrice(new BigDecimal("0"));
+            item223.setGuid(plan223ItemFacade.randomUUID());
+            item223.setNsiOkpd2(nsiOkpd2Facade.findByCode(e.getOkpd_2()));
+            item223.setQuantity(e.getQuantity().doubleValue());
+
+            DeliveryPlace223 place223 = new DeliveryPlace223();
+            place223.setOkato(e.getOkato());
+            place223.setRegion(e.getRegion());
+            place223.setNsiOkato(nsiOkatoFacade.findByCode(NsiOkato.class, e.getOkato()));
+            place223.setAddress("НЕТ");
+            deliveryPlace223Facade.persist(place223);
+            item223.setDeliveryPlace(place223);
+            purchaseItem223Facade.persist(item223);
+        });
     }
 
     public static Request parseJson(String jsonString) {

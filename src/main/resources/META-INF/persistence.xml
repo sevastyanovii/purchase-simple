@@ -14,11 +14,21 @@
         <class>ru.tower.purchase.entity.nsi.NsiAdditionalConditionType</class>
         <class>ru.tower.purchase.entity.nsi.NsiBidPurchaseCategorySMSP</class>
         <class>ru.tower.purchase.entity.nsi.NsiAstCurrency</class>
+        <class>ru.tower.purchase.entity.nsi.NsiOkei</class>
+        <class>ru.tower.purchase.entity.nsi.NsiOkved2</class>
+        <class>ru.tower.purchase.entity.nsi.NsiOkato</class>
+        <class>ru.tower.purchase.entity.nsi.NsiFederalDistrict</class>
         <class>ru.tower.purchase.entity.Organization</class>
         <class>ru.tower.purchase.entity.PurchasePlan223</class>
         <class>ru.tower.purchase.entity.PurchasePlan223Item</class>
         <class>ru.tower.purchase.entity.PurchasePlan223ItemLink</class>
         <class>ru.tower.purchase.entity.YearVolumeLong</class>
+        <class>ru.tower.purchase.entity.PurchaseItem223</class>
+        <class>ru.tower.purchase.entity.DeliveryPlace223</class>
+        <class>ru.tower.purchase.entity.DeliveryPlace223</class>
+        <class>ru.tower.purchase.entity.DeliveryPlace223Templ</class>
+        <class>ru.tower.purchase.entity.PurchaseItem223</class>
+
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL10Dialect"/>
             <property name="hibernate.connection.url"

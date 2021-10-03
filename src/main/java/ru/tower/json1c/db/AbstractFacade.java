@@ -5,11 +5,15 @@ import ru.tower.purchase.entity.AbstractEntity;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import static java.lang.String.format;
 import static ru.tower.json1c.PersistenceSupport.getEntityManager;
 
+@SuppressWarnings("All")
 public class AbstractFacade <T extends AbstractEntity,K extends Serializable>{
 
     protected static final EntityManager em = getEntityManager();
@@ -33,10 +37,22 @@ public class AbstractFacade <T extends AbstractEntity,K extends Serializable>{
         return jpaQuery.getResultList();
     }
 
+    public T selectFirst(String query, QueryParam ... params) throws Throwable {
+        Query jpaQuery = em.createQuery(query).setMaxResults(1);
+        applyParams(jpaQuery, params);
+        return (T) jpaQuery.getResultList().stream().findFirst()
+                .orElseThrow(() -> new RuntimeException(format("no rows for query '%s', params: %s"
+                        , query, Arrays.stream(params).map(e -> e.getName() + "=" + e.getValue()).collect(Collectors.joining(";","<", ">")))));
+    }
+
     public List<T> selectNamed(String queryName, QueryParam ... params) {
         Query jpaQuery = em.createNamedQuery(queryName);
         applyParams(jpaQuery, params);
         return jpaQuery.getResultList();
+    }
+
+    public T update(T entity) {
+        return em.merge(entity);
     }
 
     private void applyParams(Query jpaQuery, QueryParam ... params) {

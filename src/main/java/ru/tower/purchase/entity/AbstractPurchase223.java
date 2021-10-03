@@ -172,6 +172,13 @@ public abstract class AbstractPurchase223<E extends AbstractEntity> extends Comm
     @ManyToOne
     private NsiAstCurrency astCurrency;
 
+    /**
+     * Адрес региона поставки, если общий для всех позиций
+     */
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "deliv_place_templ_id", referencedColumnName = "id")
+    private DeliveryPlace223Templ deliveryPlace223Templ;
+
     @Override
     public NsiStatus getNsiStatus() {
         return nsiStatus;
@@ -283,5 +290,13 @@ public abstract class AbstractPurchase223<E extends AbstractEntity> extends Comm
 
     public void setExchangeRateTime(Date exchangeRateTime) {
         this.exchangeRateTime = exchangeRateTime;
+    }
+
+    public DeliveryPlace223Templ getDeliveryPlace223Templ() {
+        return deliveryPlace223Templ;
+    }
+
+    public void setDeliveryPlace223Templ(DeliveryPlace223Templ deliveryPlace223Templ) {
+        this.deliveryPlace223Templ = deliveryPlace223Templ;
     }
 }

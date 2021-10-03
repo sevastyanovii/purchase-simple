@@ -6,42 +6,56 @@ import ru.tower.purchase.entity.AbstractEntity;
 import javax.persistence.*;
 
 /**
- * Общероссийский классификатор продукции по видам экономической деятельности ОК 034-2014 (ОКПД2)
+ * Общероссийский классификатор видов экономической деятельности ОК 029-2014 (ОКВЭД2)
  */
-@NamedQuery(name = "NsiOkpd2.findByCode", query = "from NsiOkpd2 o where o.code = :code and o.actual = true")
+@NamedQuery(name = "NsiOkved2.findByCode", query = "from NsiOkved2 o where o.code = :code and o.actual = true")
 @Entity
-@Table(name = "nsi_okpd2",
-        indexes = {@Index(columnList = "code", unique = true)})
-public class NsiOkpd2 extends AbstractEntity {
+@Table(name = "nsi_okved2",
+       indexes = {@Index(columnList = "code", unique = true)})
+public class NsiOkved2 extends AbstractEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /**
-     * Код товара, работы или услуги
+     * Код
      */
-    @Column(name = "code", length = 12, unique = true, nullable = false)
+    @Column(name = "code", length = 10, unique = true, nullable = false)
     private String code;
 
     /**
-     * Наименование товара, работы или услуги
+     * Код раздела
      */
-    @Column(name = "name", length = 2000)
+    @Column(name = "section", length = 1)
+    private String section;
+
+    /**
+     * Наименование
+     */
+    @Column(name = "name", length = 500, nullable = false)
     private String name;
+
+
+    /**
+     * id на Сбер А
+     */
+    @Column(name = "ast_id")
+    private Long astId;
 
     /**
      * Признак актуальности
      */
-    @Column(name = "actual")
+    @Column(name = "actual", nullable = false)
     private boolean actual;
 
     /**
      * Узел предка в иерархии
      */
-    @JoinColumn(name = "parent_id", referencedColumnName = "id")
+    
     @ManyToOne
-    private NsiOkpd2 parentNsiOkpd2;
+    @JoinColumn(name = "parent_id")
+    private NsiOkved2 parentNsiOkved2;
 
     /**
      * Комментарий
@@ -49,12 +63,6 @@ public class NsiOkpd2 extends AbstractEntity {
     @Lob
     @Type(type = "org.hibernate.type.TextType")
     private String description;
-
-    /**
-     * id на Сбер А
-     */
-    @Column(name = "ast_id")
-    private Long astId;
 
 
     @Override
@@ -76,6 +84,13 @@ public class NsiOkpd2 extends AbstractEntity {
         this.code = code;
     }
 
+    public String getSection() {
+        return section;
+    }
+    public void setSection(String section) {
+        this.section = section;
+    }
+
     public String getName() {
         return name;
     }
@@ -90,12 +105,12 @@ public class NsiOkpd2 extends AbstractEntity {
         this.actual = actual;
     }
 
-    public NsiOkpd2 getParentNsiOkpd2() {
-        return parentNsiOkpd2;
+    public NsiOkved2 getParentNsiOkved2() {
+        return parentNsiOkved2;
     }
 
-    public void setParentNsiOkpd2(NsiOkpd2 parentNsiOkpd2) {
-        this.parentNsiOkpd2 = parentNsiOkpd2;
+    public void setParentNsiOkved2(NsiOkved2 parentNsiOkved2) {
+        this.parentNsiOkved2 = parentNsiOkved2;
     }
 
     public String getDescription() {

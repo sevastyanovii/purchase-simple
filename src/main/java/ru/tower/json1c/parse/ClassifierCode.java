@@ -1,11 +1,13 @@
 package ru.tower.json1c.parse;
 
+import java.math.BigDecimal;
+
 public class ClassifierCode {
 
     private String okved_2;
     private String okpd_2;
     private String unit_measurement;
-    private Integer quantity;
+    private BigDecimal quantity;
     private String okato;
     private String region;
 
@@ -33,11 +35,11 @@ public class ClassifierCode {
         this.unit_measurement = unit_measurement;
     }
 
-    public Integer getQuantity() {
+    public BigDecimal getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(Integer quantity) {
+    public void setQuantity(BigDecimal quantity) {
         this.quantity = quantity;
     }
 
