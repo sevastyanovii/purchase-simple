@@ -45,18 +45,28 @@ public class AbstractFacade <T extends AbstractEntity,K extends Serializable>{
         return jpaQuery.getResultList();
     }
 
-    public T selectFirst(String query, QueryParam ... params) throws Throwable {
+    public T selectFirst(String query, QueryParam ... params) {
         Query jpaQuery = em.createQuery(query).setMaxResults(1);
         applyParams(jpaQuery, params);
         return getFirstResult(jpaQuery);
     }
 
-    private T getFirstResult(Query jpaQuery) throws Throwable {
-        Set<Parameter<?>> paramSet = jpaQuery.getParameters();
-        List<QueryParam> params = paramSet.stream().map(p -> param(p.getName(), jpaQuery.getParameterValue(p))).collect(Collectors.toList());
-        return (T) jpaQuery.getResultList().stream().findFirst()
-                .orElseThrow(() -> new RuntimeException(format("no rows for query '%s', params: %s"
-                        , jpaQuery, params.stream().map(e -> e.getName() + "=" + e.getValue()).collect(Collectors.joining(";","<", ">")))));
+    public T selectFirstNamed(String queryName, QueryParam ... params) throws Throwable {
+        Query jpaQuery = em.createNamedQuery(queryName).setMaxResults(1);
+        applyParams(jpaQuery, params);
+        return getFirstResult(jpaQuery);
+    }
+
+    protected T getFirstResult(Query jpaQuery) {
+        try {
+            Set<Parameter<?>> paramSet = jpaQuery.getParameters();
+            List<QueryParam> params = paramSet.stream().map(p -> param(p.getName(), jpaQuery.getParameterValue(p))).collect(Collectors.toList());
+            return (T) jpaQuery.getResultList().stream().findFirst()
+                    .orElseThrow(() -> new RuntimeException(format("No rows for query, params: %s"
+                            , params.stream().map(e -> e.getName() + "=" + e.getValue()).collect(Collectors.joining(";","<", ">")))));
+        } catch (Throwable e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
 
     public List<T> selectNamed(String queryName, QueryParam ... params) {
@@ -69,7 +79,7 @@ public class AbstractFacade <T extends AbstractEntity,K extends Serializable>{
         return em.merge(entity);
     }
 
-    private void applyParams(Query jpaQuery, QueryParam ... params) {
+    protected void applyParams(Query jpaQuery, QueryParam ... params) {
         if (null != params) {
             for (QueryParam param : params){
                 jpaQuery.setParameter(param.getName(), param.getValue());

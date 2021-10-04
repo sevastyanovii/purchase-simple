@@ -5,7 +5,7 @@ import ru.tower.purchase.entity.nsi.NsiAstPurchaseType;
 import static java.lang.String.format;
 
 @SuppressWarnings("ALL")
-public class NsiAstPurchaseTypeFacade extends AbstractFacade <NsiAstPurchaseType, Long> {
+public class NsiAstPurchaseTypeFacade extends AbstractNsiFacade <NsiAstPurchaseType, Long> {
 
     public NsiAstPurchaseTypeFacade() {
         super(NsiAstPurchaseType.class);

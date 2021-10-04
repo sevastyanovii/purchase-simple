@@ -5,7 +5,7 @@ import ru.tower.purchase.entity.nsi.NsiBidPurchaseCategorySMSP;
 import static java.lang.String.format;
 
 @SuppressWarnings("ALL")
-public class NsiBidPurchaseCategorySMSPFacade extends AbstractFacade <NsiBidPurchaseCategorySMSP, Long> {
+public class NsiBidPurchaseCategorySMSPFacade extends AbstractNsiFacade <NsiBidPurchaseCategorySMSP, Long> {
 
     public NsiBidPurchaseCategorySMSPFacade() {
         super(NsiBidPurchaseCategorySMSP.class);
