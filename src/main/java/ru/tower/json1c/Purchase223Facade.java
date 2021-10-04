@@ -4,4 +4,7 @@ import ru.tower.json1c.db.AbstractFacade;
 import ru.tower.purchase.entity.Purchase223;
 
 public class Purchase223Facade extends AbstractFacade<Purchase223, Long> {
+    public Purchase223Facade() {
+        super(Purchase223.class);
+    }
 }

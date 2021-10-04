@@ -80,7 +80,7 @@ public class Json1CParserTest {
         assertEquals("d5ddbc50-e385-4a85-af75-30f5c65378fd", request.getPlan_position().getId_sbkr());
         assertEquals("Оказание услуг по привлечению клиентов и услуг по выдаче ипотечных кредитов для нужд АО Банк ДОМ.РФ", request.getPlan_position().getSubject_contract());
         assertEquals(true, request.getPlan_position().getElectronic_form());
-        assertEquals(new BigDecimal("88.7545"), request.getPlan_position().getCurrency_exchange_rate());
+        assertEquals(new BigDecimal("90.7676"), request.getPlan_position().getCurrency_exchange_rate());
         assertEquals(new BigDecimal("19800000.00"), request.getPlan_position().getContract_amount_rub());
         assertEquals(2, request.getPlan_position().getBudget_applications().size());
         assertNotNull(request.getPlan_position().getExecuting_division().getCode_zup());
@@ -91,11 +91,11 @@ public class Json1CParserTest {
     }
 
     @Test public void test5() {
-        PurchasePlan223 plan223 = new PurchasePlan223Facade().find(PurchasePlan223.class, 1L);
+        PurchasePlan223 plan223 = new PurchasePlan223Facade().find(1L);
     }
 
     @Test public void test4() throws Throwable {
-        Organization organization = new OrganizationFacade().find(Organization.class, 23L);
+        Organization organization = new OrganizationFacade().find(23L);
         assertNotNull(organization);
         Purchase223 purchase223 = new JsonPurchasePositionParser(getExampleBody()).createPurchase(organization);
         System.out.println("purchase id = " + purchase223.getId());

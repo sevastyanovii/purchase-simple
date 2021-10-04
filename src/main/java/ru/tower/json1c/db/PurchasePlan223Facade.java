@@ -8,6 +8,10 @@ import static java.lang.String.format;
 @SuppressWarnings("ALL")
 public class PurchasePlan223Facade extends AbstractFacade <PurchasePlan223, Long> {
 
+    public PurchasePlan223Facade() {
+        super(PurchasePlan223.class);
+    }
+
     public PurchasePlan223 findPlan(Organization organization, Integer yearPurchase) throws Throwable {
         return (PurchasePlan223) em.createNamedQuery("PurchasePlan223.findPlan")
                 .setParameter("org", organization)

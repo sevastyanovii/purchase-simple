@@ -5,8 +5,6 @@ import com.google.gson.GsonBuilder;
 import ru.tower.json1c.Purchase223Facade;
 import ru.tower.json1c.db.*;
 import ru.tower.purchase.entity.*;
-import ru.tower.purchase.entity.nsi.NsiOkato;
-import ru.tower.purchase.entity.nsi.NsiStatus;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -49,7 +47,7 @@ public class JsonPurchasePositionParser {
 
     public Purchase223 createPurchase(Organization organization) throws Throwable {
 
-        purchase223.setNsiStatus(nsiStatusFacade.find(NsiStatus.class, Long.parseLong(purchaseRequest.getPlan_position().getPosition_status())));
+        purchase223.setNsiStatus(nsiStatusFacade.find(Long.parseLong(purchaseRequest.getPlan_position().getPosition_status())));
         purchase223.setOrganization(organization);
         purchase223.setNmckInstruction(INFORMATION);
         purchase223.setPurchasesDescription(purchasesDescriptionFacade.findByName(purchaseRequest.getPlan_position().getSubject_contract()));
@@ -76,7 +74,7 @@ public class JsonPurchasePositionParser {
         purchase223.setStartPriceRUR(purchaseRequest.getPlan_position().getContract_amount_rub());
         purchase223.setExchangeRate(purchaseRequest.getPlan_position()
                 .getCurrency_exchange_rate().divide(BigDecimal.valueOf(purchaseRequest.getPlan_position().getMultiplicity()), 4, RoundingMode.HALF_UP).toString());
-        purchase223.setAstCurrency(nsiAstCurrencyFacade.findCurrency(purchaseRequest.getPlan_position().getCurrency()));
+        purchase223.setAstCurrency(nsiAstCurrencyFacade.findByCode(purchaseRequest.getPlan_position().getCurrency()));
         purchase223.setExchangeRateTime(purchaseRequest.getPlan_position().getCourse_date());
         purchase223Facade.persist(purchase223);
 
@@ -123,7 +121,7 @@ public class JsonPurchasePositionParser {
                 DeliveryPlace223Templ place223 = new DeliveryPlace223Templ();
                 place223.setOkato(c.getOkato());
                 place223.setRegion(c.getRegion());
-                place223.setNsiOkato(nsiOkatoFacade.findByCode(NsiOkato.class, c.getOkato()));
+                place223.setNsiOkato(nsiOkatoFacade.findByCode(c.getOkato()));
                 place223.setAddress("НЕТ");
                 deliveryPlace223TemplFacade.persist(place223);
                 purchase223.setDeliveryPlace223Templ(place223);
@@ -143,7 +141,7 @@ public class JsonPurchasePositionParser {
             DeliveryPlace223 place223 = new DeliveryPlace223();
             place223.setOkato(e.getOkato());
             place223.setRegion(e.getRegion());
-            place223.setNsiOkato(nsiOkatoFacade.findByCode(NsiOkato.class, e.getOkato()));
+            place223.setNsiOkato(nsiOkatoFacade.findByCode(e.getOkato()));
             place223.setAddress("НЕТ");
             deliveryPlace223Facade.persist(place223);
             item223.setDeliveryPlace(place223);

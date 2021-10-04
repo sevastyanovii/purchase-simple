@@ -5,6 +5,10 @@ import ru.tower.purchase.entity.nsi.NsiPurchasesDescription;
 @SuppressWarnings("ALL")
 public class NsiPurchasesDescriptionFacade extends AbstractFacade <NsiPurchasesDescription, Long> {
 
+    public NsiPurchasesDescriptionFacade() {
+        super(NsiPurchasesDescription.class);
+    }
+
     public NsiPurchasesDescription findByName(String name) {
         return (NsiPurchasesDescription) em.createNamedQuery("NsiPurchasesDescription.findByName")
                 .setParameter("like", name).setMaxResults(1).getResultList().stream().findFirst().orElseGet(() -> {
