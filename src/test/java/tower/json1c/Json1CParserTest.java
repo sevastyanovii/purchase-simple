@@ -4,13 +4,15 @@ import org.junit.jupiter.api.*;
 import ru.tower.json1c.PersistenceSupport;
 import ru.tower.json1c.db.OrganizationFacade;
 import ru.tower.json1c.db.PurchaseItem223Facade;
-import ru.tower.json1c.db.PurchasePlan223Facade;
 import ru.tower.json1c.db.YearVolumeLongFacade;
 import ru.tower.json1c.map.SimpleEntity;
 import ru.tower.json1c.parse.JsonPurchasePositionParser;
 import ru.tower.json1c.parse.PlanPositionFile;
 import ru.tower.json1c.parse.Request;
-import ru.tower.purchase.entity.*;
+import ru.tower.purchase.entity.Organization;
+import ru.tower.purchase.entity.Purchase223;
+import ru.tower.purchase.entity.SmallVolumes;
+import ru.tower.purchase.entity.YearVolumeLong;
 
 import javax.persistence.EntityManager;
 import java.io.IOException;
@@ -61,20 +63,7 @@ public class Json1CParserTest {
         assertNotNull(entity.getId());
     }
 
-    @Test public void test2() throws IOException {
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream("1.json");
-        InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8);
-        char[] buff = new char[1024];
-        int count = 0; StringBuilder jsonBuilder = new StringBuilder();
-        while ((count = reader.read(buff, 0, 1024)) > 0) {
-            jsonBuilder.append(buff, 0, count);
-        }
-        String json = jsonBuilder.toString();
-
-        System.out.println(json);
-    }
-
-    @Test public void test3() {
+    @Test public void testParse() {
         Request request = parseJson(getExampleBody());
         assertNotNull(request);
         assertEquals("d5ddbc50-e385-4a85-af75-30f5c65378fd", request.getPlan_position().getId_sbkr());
@@ -90,11 +79,7 @@ public class Json1CParserTest {
         assertEquals("документ2.pdf", request.getPlan_position().getFiles().toArray(new PlanPositionFile[]{})[1].getName());
     }
 
-    @Test public void test5() {
-        PurchasePlan223 plan223 = new PurchasePlan223Facade().find(1L);
-    }
-
-    @Test public void test4() throws Throwable {
+    @Test public void testPersist() throws Throwable {
         Organization organization = new OrganizationFacade().find(23L);
         assertNotNull(organization);
         Purchase223 purchase223 = new JsonPurchasePositionParser(getExampleBody()).createPurchase(organization);
