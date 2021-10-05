@@ -39,6 +39,7 @@ public class Json1CParserTest {
             PersistenceSupport.commitTransaction();
         } catch (Exception e) {
             System.out.println("Error on commit: " + e.getMessage());
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 
@@ -48,6 +49,7 @@ public class Json1CParserTest {
             PersistenceSupport.getEntityManager().close();
         } catch (Exception e) {
             System.out.println("Error on close EM: " + e.getMessage());
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 

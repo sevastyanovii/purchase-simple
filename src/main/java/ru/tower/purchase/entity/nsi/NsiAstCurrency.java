@@ -7,7 +7,7 @@ import javax.persistence.*;
 /**
  *  Валюта
  */
-@NamedQuery(name = "NsiAstCurrency.findCurrency", query = "from NsiAstCurrency c where c.code = :code")
+@NamedQuery(name = "NsiAstCurrency.findByCode", query = "from NsiAstCurrency c where c.code = :code and actual = true")
 @Entity
 @Table(name = "nsi_ast_currency")
 public class NsiAstCurrency extends AbstractEntity {
