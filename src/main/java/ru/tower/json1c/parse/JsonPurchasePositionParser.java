@@ -36,6 +36,8 @@ public class JsonPurchasePositionParser {
     private final NsiFederalDistrictFacade nsiFederalDistrictFacade = new NsiFederalDistrictFacade();
     private final DeliveryPlace223Facade deliveryPlace223Facade = new DeliveryPlace223Facade();
     private final DeliveryPlace223TemplFacade deliveryPlace223TemplFacade = new DeliveryPlace223TemplFacade();
+    private final NsiPublicationStatusFacade nsiPublicationStatusFacade = new NsiPublicationStatusFacade();
+    private final FileFacade fileFacade = new FileFacade();
 
     private final Request purchaseRequest;
     private final Purchase223 purchase223;
@@ -81,6 +83,8 @@ public class JsonPurchasePositionParser {
         setYearDiffData();
 
         setClassifiers();
+
+        saveSbkrFile();
 
         return purchase223;
     }
@@ -147,6 +151,17 @@ public class JsonPurchasePositionParser {
             item223.setDeliveryPlace(place223);
             purchaseItem223Facade.persist(item223);
         });
+    }
+
+    private void saveSbkrFile() {
+        File sbkrFile = new File();
+        sbkrFile.setOrganization(purchase223.getOrganization());
+        sbkrFile.setNsiPublicationStatus(nsiPublicationStatusFacade.find(1L));
+        sbkrFile.setGuid(fileFacade.randomUUID());
+        sbkrFile = fileFacade.persist(sbkrFile);
+        purchase223.setSbkrFile(sbkrFile);
+        purchase223Facade.update(purchase223);
+
     }
 
     public static Request parseJson(String jsonString) {

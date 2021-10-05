@@ -23,6 +23,10 @@ public class Purchase223 extends AbstractPurchase223<Purchase223> {
     @Column(name = "general_address", columnDefinition = "boolean default true", nullable = false)
     private boolean generalAddress;
 
+    @ManyToOne
+    @JoinColumns(value = {@JoinColumn(name = "sbkr_file_id", referencedColumnName = "id"), @JoinColumn(name = "sbkr_file_version", referencedColumnName = "version")})
+    private File sbkrFile;
+
     @Override
     public Object getEntityId() {
         return getId();
@@ -57,5 +61,13 @@ public class Purchase223 extends AbstractPurchase223<Purchase223> {
 
     public void setGeneralAddress(boolean generalAddress) {
         this.generalAddress = generalAddress;
+    }
+
+    public File getSbkrFile() {
+        return sbkrFile;
+    }
+
+    public void setSbkrFile(File sbkrFile) {
+        this.sbkrFile = sbkrFile;
     }
 }

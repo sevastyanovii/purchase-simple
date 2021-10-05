@@ -32,6 +32,7 @@ public class AbstractFacade <T extends AbstractEntity,K extends Serializable>{
 
     public T persist(T object) {
         em.persist(object);
+        flush();
         return object;
     }
 
@@ -85,6 +86,10 @@ public class AbstractFacade <T extends AbstractEntity,K extends Serializable>{
                 jpaQuery.setParameter(param.getName(), param.getValue());
             }
         }
+    }
+
+    public void flush() {
+        em.flush();
     }
 
 }

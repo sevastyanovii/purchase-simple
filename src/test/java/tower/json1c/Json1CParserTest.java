@@ -2,6 +2,7 @@ package tower.json1c;
 
 import org.junit.jupiter.api.*;
 import ru.tower.json1c.PersistenceSupport;
+import ru.tower.json1c.db.FileFacade;
 import ru.tower.json1c.db.OrganizationFacade;
 import ru.tower.json1c.db.PurchaseItem223Facade;
 import ru.tower.json1c.db.YearVolumeLongFacade;
@@ -9,10 +10,7 @@ import ru.tower.json1c.map.SimpleEntity;
 import ru.tower.json1c.parse.JsonPurchasePositionParser;
 import ru.tower.json1c.parse.PlanPositionFile;
 import ru.tower.json1c.parse.Request;
-import ru.tower.purchase.entity.Organization;
-import ru.tower.purchase.entity.Purchase223;
-import ru.tower.purchase.entity.SmallVolumes;
-import ru.tower.purchase.entity.YearVolumeLong;
+import ru.tower.purchase.entity.*;
 
 import javax.persistence.EntityManager;
 import java.io.IOException;
@@ -103,6 +101,10 @@ public class Json1CParserTest {
                 .stream().allMatch(c -> null != c.getDeliveryPlace()));
         assertEquals(new BigDecimal("45.3838").toString(), purchase223.getExchangeRate());
 
+        assertNotNull(purchase223.getSbkrFile());
+        File sbkrFile = new FileFacade().selectFirst("from File f where exists (from Purchase223 p where p.sbkrFile = :file and p = :purchase)"
+            , param("file", purchase223.getSbkrFile()), param("purchase", purchase223));
+        assertNotNull(sbkrFile);
     }
 
     private String getExampleBody() {

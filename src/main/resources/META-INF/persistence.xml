@@ -18,6 +18,8 @@
         <class>ru.tower.purchase.entity.nsi.NsiOkved2</class>
         <class>ru.tower.purchase.entity.nsi.NsiOkato</class>
         <class>ru.tower.purchase.entity.nsi.NsiFederalDistrict</class>
+        <class>ru.tower.purchase.entity.nsi.NsiFileType</class>
+        <class>ru.tower.purchase.entity.nsi.NsiPublicationStatus</class>
         <class>ru.tower.purchase.entity.Organization</class>
         <class>ru.tower.purchase.entity.PurchasePlan223</class>
         <class>ru.tower.purchase.entity.PurchasePlan223Item</class>
@@ -28,7 +30,7 @@
         <class>ru.tower.purchase.entity.DeliveryPlace223</class>
         <class>ru.tower.purchase.entity.DeliveryPlace223Templ</class>
         <class>ru.tower.purchase.entity.PurchaseItem223</class>
-
+        <class>ru.tower.purchase.entity.File</class>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL10Dialect"/>
             <property name="hibernate.connection.url"
