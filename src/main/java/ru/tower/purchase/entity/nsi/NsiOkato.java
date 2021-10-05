@@ -7,6 +7,7 @@ import javax.persistence.*;
 /**
  * ОКАТО
  */
+@NamedQuery(name = "NsiOkato.findByCode", query = "from NsiOkato o where o.code = :code and actual = true")
 @Entity
 @Table(name = "nsi_okato")
 //       indexes = {@Index(columnList = "code")})
