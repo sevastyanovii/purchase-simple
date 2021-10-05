@@ -5,9 +5,11 @@ import com.google.gson.GsonBuilder;
 import ru.tower.json1c.Purchase223Facade;
 import ru.tower.json1c.db.*;
 import ru.tower.purchase.entity.*;
+import ru.tower.purchase.entity.nsi.NsiPublicationStatusRegistry;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Date;
 
 import static java.lang.String.format;
 import static java.util.stream.IntStream.rangeClosed;
@@ -158,6 +160,9 @@ public class JsonPurchasePositionParser {
         sbkrFile.setOrganization(purchase223.getOrganization());
         sbkrFile.setNsiPublicationStatus(nsiPublicationStatusFacade.find(1L));
         sbkrFile.setGuid(fileFacade.randomUUID());
+        sbkrFile.setName("1.json");
+        sbkrFile.setCreationDate(new Date());
+        sbkrFile.setNsiPublicationStatus(nsiPublicationStatusFacade.find(NsiPublicationStatusRegistry.PREPARATION.getId()));
         sbkrFile = fileFacade.persist(sbkrFile);
         purchase223.setSbkrFile(sbkrFile);
         purchase223Facade.update(purchase223);

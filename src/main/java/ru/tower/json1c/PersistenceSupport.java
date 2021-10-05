@@ -13,7 +13,11 @@ public class PersistenceSupport {
     }
 
     public static void commitTransaction() {
-        getEntityManager().getTransaction().commit();
+        if (getEntityManager().getTransaction().isActive()){
+            getEntityManager().getTransaction().commit();
+        } else {
+            throw new RuntimeException("Transaction is not active");
+        }
     }
 
     public static final ThreadLocal<EntityManager> entityManagerThreadLocal = ThreadLocal.withInitial(() -> {
